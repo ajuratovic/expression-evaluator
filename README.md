@@ -26,10 +26,17 @@ When this API is being called new logical expression should be created and ident
 ### Example:
 
 ```
-Name: Complex logical expression
+{
+  "name": "Simple logical expression",
+  "value": "(customer.firstName == "JOHN" && customer.salary < 100) OR (customer.address != null && customer.address.city == "Washington")"
+}
 ```
+
 ```
-Value: (customer.firstName == "JOHN" && customer.salary < 100) OR (customer.address != null && customer.address.city == "Washington")
+{
+  "name": "Simple logical expression 2",
+  "value": "true == (false || true)"
+}
 ```
 
 ### API Definition: 
@@ -54,6 +61,7 @@ When this API is being called requested logical expression should be evaluated u
 
 ```
 {
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "customer":
   {
     "firstName": "JOHN",
