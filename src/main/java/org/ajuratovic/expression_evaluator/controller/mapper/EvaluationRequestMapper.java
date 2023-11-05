@@ -1,12 +1,15 @@
 package org.ajuratovic.expression_evaluator.controller.mapper;
 
-import org.ajuratovic.expression_evaluator.controller.model.EvaluationRequest;
 import org.ajuratovic.expression_evaluator.service.model.EvaluationModel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface EvaluationRequestMapper {
 
-    EvaluationModel requestToModel(EvaluationRequest evaluationRequest);
-    EvaluationRequest modelToRequest(EvaluationModel expression);
+    @Mapping(target = "id", source = "expressionId")
+    @Mapping(target = "data", source = "evaluationData")
+    EvaluationModel requestToModel(UUID expressionId, String evaluationData);
 }

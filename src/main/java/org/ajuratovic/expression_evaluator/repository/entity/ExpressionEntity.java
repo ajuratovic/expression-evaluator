@@ -31,5 +31,6 @@ public class ExpressionEntity {
     @Column(nullable = false)
     @NotBlank
     @Size(max = 255)
+//    @LogicalExpression
     private String expression;
 }

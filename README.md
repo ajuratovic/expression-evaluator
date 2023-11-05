@@ -1,6 +1,6 @@
 # Exercise
 
-Implement logical expressionModel evaluator.
+Implement logical expression evaluator.
 
 ## Specification
 Your application should expose two HTTP endpoints:
@@ -8,33 +8,33 @@ Your application should expose two HTTP endpoints:
 ### API Definition: 
 
 ```
-/expressionModel
+/expression
 ```
 
 ### API Input:
 
-This API endpoint should take name of the logical expressionModel and its value:
+This API endpoint should take name of the logical expression and its value:
 
 ### API Response:
 
-For each request executed against the API endpoint you should return an unique identifier that represents the identifier of logical expressionModel.
+For each request executed against the API endpoint you should return an unique identifier that represents the identifier of logical expression.
 
 ### Workflow:
 
-When this API is being called new logical expressionModel should be created and identifier of newly created logical expressionModel is returned.
+When this API is being called new logical expression should be created and identifier of newly created logical expression is returned.
 
 ### Example:
 
 ```
 {
-  "name": "Simple logical expressionModel",
+  "name": "Simple logical expression",
   "value": "(customer.firstName == "JOHN" && customer.salary < 100) OR (customer.address != null && customer.address.city == "Washington")"
 }
 ```
 
 ```
 {
-  "name": "Simple logical expressionModel 2",
+  "name": "Simple logical expression 2",
   "value": "true == (false || true)"
 }
 ```
@@ -42,26 +42,25 @@ When this API is being called new logical expressionModel should be created and 
 ### API Definition: 
 
 ```
-/evaluate
+/evaluate/{expressionId}
 ```
 
 ### API Input:
 
-This API endpoint takes expressionModel ID and JSON object as input.
+This API endpoint takes expression ID and JSON object as input.
 
 ### API Output:
 
-Returns the result of evaluationModel by using the requested expressionModel and provided JSON object.
+Returns the result of evaluationModel by using the requested expression and provided JSON object.
 
 ### Workflow:
 
-When this API is being called requested logical expressionModel should be evaluated using the provied JSON object.
+When this API is being called requested logical expression should be evaluated using the provied JSON object.
 
 ### Example:
 
 ```
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "customer":
   {
     "firstName": "JOHN",
@@ -86,7 +85,7 @@ You should use following frameworks for your work.
 H2 database running in memory (data will not be persistent across application restarts). 
 
 ### 3rd party libraries
-You are free to add/change any libraries which you might need to solve this exercise, except using any 3rd party expressionModel evaluationModel library (i.e. SpEL, JSONPath or any other). Also the requirement is that we do not have to setup / install any external software to run this application.
+You are free to add/change any libraries which you might need to solve this exercise, except using any 3rd party expression evaluationModel library (i.e. SpEL, JSONPath or any other). Also the requirement is that we do not have to setup / install any external software to run this application.
 
 ### Running the exercise with maven
 ```mvn spring-boot:run```

@@ -3,7 +3,6 @@ package org.ajuratovic.expression_evaluator.controller;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ajuratovic.expression_evaluator.ExpressionEvaluatorApplication;
-import org.ajuratovic.expression_evaluator.controller.model.EvaluationRequest;
 import org.ajuratovic.expression_evaluator.controller.model.EvaluationResponse;
 import org.ajuratovic.expression_evaluator.controller.model.ExpressionRequest;
 import org.ajuratovic.expression_evaluator.controller.model.ExpressionResponse;
@@ -13,7 +12,9 @@ import org.ajuratovic.expression_evaluator.repository.entity.ExpressionEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -74,7 +75,7 @@ class ExpressionEvaluatorControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(expressionRequestAsJson));
 
-        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest())
+        MvcResult mvcResult = resultActions.andExpect(status().isMethodNotAllowed())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
         String responseBody = mvcResult.getResponse().getContentAsString();
@@ -139,12 +140,9 @@ class ExpressionEvaluatorControllerTest {
         expressionEntity.setName("Test");
         expressionEntity = expressionRepository.save(expressionEntity);
 
-        EvaluationRequest evaluationRequest = new EvaluationRequest(expressionEntity.getId().toString(), "data");
-        String evaluationRequestAsJson = objectMapper.writeValueAsString(evaluationRequest);
-
-        ResultActions resultActions = mockMvc.perform(put("/evaluate")
+        ResultActions resultActions = mockMvc.perform(put("/evaluate/" + expressionEntity.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(evaluationRequestAsJson));
+                .content("data"));
 
         MvcResult mvcResult = resultActions.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -162,14 +160,11 @@ class ExpressionEvaluatorControllerTest {
         expressionEntity.setName("Test");
         expressionEntity = expressionRepository.save(expressionEntity);
 
-        EvaluationRequest evaluationRequest = new EvaluationRequest(expressionEntity.getId().toString(), "data");
-        String evaluationRequestAsJson = objectMapper.writeValueAsString(evaluationRequest);
-
-        ResultActions resultActions = mockMvc.perform(post("/evaluate")
+        ResultActions resultActions = mockMvc.perform(post("/evaluate/" + expressionEntity.getId().toString())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(evaluationRequestAsJson));
+                .content("data"));
 
-        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest())
+        MvcResult mvcResult = resultActions.andExpect(status().isMethodNotAllowed())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
         String responseBody = mvcResult.getResponse().getContentAsString();
@@ -177,57 +172,47 @@ class ExpressionEvaluatorControllerTest {
     }
 
     @ParameterizedTest
-    @NullAndEmptySource
+    @NullSource
     @ValueSource(strings = {"test", "mock-UUID", "788ade84-6699-466-8595-974800d3a1d7", "6ea2f1fc-4b9e-4cf1-970b-2bc2f34235d0"})
     void evaluateLogicalExpression_invalidId(String id) throws Exception {
-        EvaluationRequest evaluationRequest = new EvaluationRequest(id, "data");
-        String evaluationRequestAsJson = objectMapper.writeValueAsString(evaluationRequest);
 
-        ResultActions resultActions = mockMvc.perform(put("/evaluate")
+        ResultActions resultActions = mockMvc.perform(put("/evaluate/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(evaluationRequestAsJson));
+                .content("data"));
 
-        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound())
                 .andReturn();
         String responseBody = mvcResult.getResponse().getContentAsString();
         Assertions.assertTrue(isValidJson(responseBody, ErrorMessage.class));
     }
 
     @ParameterizedTest
-    @NullAndEmptySource
-    void evaluateLogicalExpression_invalidEvaluationData(String data) throws Exception {
-        String id = UUID.randomUUID().toString();
-        EvaluationRequest evaluationRequest = new EvaluationRequest(id, data);
-        String evaluationRequestAsJson = objectMapper.writeValueAsString(evaluationRequest);
+    @EmptySource
+    void evaluateLogicalExpression_emptyId(String id) throws Exception {
 
-        ResultActions resultActions = mockMvc.perform(put("/evaluate")
+        ResultActions resultActions = mockMvc.perform(put("/evaluate/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(evaluationRequestAsJson));
+                .content("data"));
 
-        MvcResult mvcResult = resultActions.andExpect(status().isBadRequest())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = resultActions.andExpect(status().isNotFound())
                 .andReturn();
         String responseBody = mvcResult.getResponse().getContentAsString();
-        Assertions.assertTrue(isValidJson(responseBody, ErrorMessage.class));
+        Assertions.assertTrue(responseBody.isEmpty());
     }
 
     @ParameterizedTest
-    @NullAndEmptySource
-    void evaluateLogicalExpression_invalidBothParams(String data) throws Exception {
+    @EmptySource
+    void evaluateLogicalExpression_emptyEvaluationData(String data) throws Exception {
         String id = UUID.randomUUID().toString();
-        EvaluationRequest evaluationRequest = new EvaluationRequest(data, data);
-        String evaluationRequestAsJson = objectMapper.writeValueAsString(evaluationRequest);
 
-        ResultActions resultActions = mockMvc.perform(put("/evaluate")
+        ResultActions resultActions = mockMvc.perform(put("/evaluate/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(evaluationRequestAsJson));
+                .content(data));
 
         MvcResult mvcResult = resultActions.andExpect(status().isBadRequest())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andReturn();
         String responseBody = mvcResult.getResponse().getContentAsString();
-        Assertions.assertTrue(isValidJson(responseBody, ErrorMessage.class));
+        Assertions.assertTrue(responseBody.isEmpty());
     }
 
     private boolean isValidJson(String json, Class clazz) {

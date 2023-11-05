@@ -2,6 +2,7 @@ package org.ajuratovic.expression_evaluator.service;
 
 
 import lombok.AllArgsConstructor;
+import org.ajuratovic.expression_evaluator.engine.EvaluatorEngine;
 import org.ajuratovic.expression_evaluator.service.model.EvaluationModel;
 import org.ajuratovic.expression_evaluator.service.model.ExpressionModel;
 import org.ajuratovic.expression_evaluator.service.persistance.PersistenceAdapter;
@@ -28,7 +29,7 @@ public class ExpressionEvaluatorService {
         UUID expressionId = evaluationModel.getId();
         ExpressionModel expressionModel = persistenceAdapter.getExpression(expressionId);
 
-        boolean evaluationResult = evaluatorEngine.evaluateDataWithExpression(evaluationModel.getData(), expressionModel.getExpression());
+        boolean evaluationResult = evaluatorEngine.evaluateExpressionWithData(expressionModel.getExpression(), evaluationModel.getData());
         return evaluationResult;
     }
 }
